@@ -57,10 +57,18 @@
                     }
                 } else if ('attributes') {
                     const elm = mutation.target;
-                    if (elm.className.indexOf('xr8AW') > -1 && elm.querySelector('div.emojis')) {
+                    if (typeof(elm.className) === 'string' && elm.className.indexOf('xr8AW') > -1 && elm.querySelector('div.emojis')) {
                         // emoji picker window
-                        elm.style.top = `${y}px`;
-                        elm.style.left = `${Math.max(0, x - elm.offsetWidth / 2)}px`;
+                        const h = elm.offsetHeight;
+                        const w = elm.offsetWidth;
+                        const bottom = y + h;
+                        const right = x + w / 2;
+                        const dy = bottom - appHeight;
+                        const dx = right - appWidth;
+                        const top = Math.max(0, y - Math.max(0, dy));
+                        const left = Math.max(0, (x - w / 2) - Math.max(0, dx));
+                        elm.style.top = `${top}px`;
+                        elm.style.left = `${left}px`;
                     }
                 }
             }
