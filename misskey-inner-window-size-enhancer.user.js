@@ -5,8 +5,6 @@
 // @description  Enhance Misskey's inner window
 // @author       ilplrr
 // @match        https://misskey.io/
-// @match        https://mattyaski.co/
-// @match        https://nijimiss.moe/
 // @grant        none
 // ==/UserScript==
 
