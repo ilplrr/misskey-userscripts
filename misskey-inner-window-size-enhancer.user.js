@@ -64,7 +64,7 @@
                         const bottom = y + h;
                         const right = x + w / 2;
                         const top = Math.max(0, y - Math.max(0, bottom - appHeight));
-                        const left = Math.max(0, (x - w / 2) - Math.max(0, right - appWidth));
+                        const left = Math.max(0, x - w / 2 - Math.max(0, right - appWidth));
                         elm.style.top = `${top}px`;
                         elm.style.left = `${left}px`;
                     }
