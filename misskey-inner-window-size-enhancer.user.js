@@ -37,25 +37,23 @@
                 if (mutation.type === 'childList') {
                     const elm = mutation.addedNodes[0];
                     if (!elm) continue;
-                    if (elm.tagName === 'DIV') {
-                        if (elm.className === 'xpAOc') {
-                            if (elm.querySelector('div.emojis')) continue;
+                    if (elm.tagName === 'DIV' && elm.className === 'xpAOc') {
+                        if (elm.querySelector('div.emojis')) continue;
 
-                            // resize
-                            elm.style.height = INNER_WINDOW_DEFAULT_HEIGHT;
-                            elm.style.width = INNER_WINDOW_DEFAULT_WIDTH;
+                        // resize
+                        elm.style.height = INNER_WINDOW_DEFAULT_HEIGHT;
+                        elm.style.width = INNER_WINDOW_DEFAULT_WIDTH;
 
-                            // inner window's top border
-                            elm.querySelector('div.x6GRm.xe7xr').addEventListener('dblclick', () => {
-                                elm.style.top = '0px';
-                                elm.style.height = `${appHeight - 5}px`;
-                            });
+                        // inner window's top border
+                        elm.querySelector('div.x6GRm.xe7xr').addEventListener('dblclick', () => {
+                            elm.style.top = '0px';
+                            elm.style.height = `${appHeight - 5}px`;
+                        });
 
-                            // inner window's bottom border
-                            elm.querySelector('div.xnqRB.xe7xr').addEventListener('dblclick', () => {
-                                elm.style.height = `${appHeight - elm.offsetTop}px`;
-                            });
-                        }
+                        // inner window's bottom border
+                        elm.querySelector('div.xnqRB.xe7xr').addEventListener('dblclick', () => {
+                            elm.style.height = `${appHeight - elm.offsetTop}px`;
+                        });
                     }
                 } else if ('attributes') {
                     const elm = mutation.target;
