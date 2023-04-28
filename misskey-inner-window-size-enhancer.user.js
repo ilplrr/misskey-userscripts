@@ -40,7 +40,7 @@
                     const elm = mutation.addedNodes[0];
                     if (!elm) continue;
                     if (elm.tagName === 'DIV' && [...elm.classList].includes('xpAOc')) {
-                        if (elm.querySelector('div.emojis')) continue;
+                        if (elm.querySelector('div.emojis')?.className === 'emojis') continue;
 
                         // resize
                         elm.style.height = INNER_WINDOW_DEFAULT_HEIGHT;
