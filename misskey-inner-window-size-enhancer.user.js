@@ -2,7 +2,7 @@
 // @name         misskey-inner-window-size-enhancer
 // @namespace    https://github.com/ilplrr
 // @version      1.1
-// @description  Enhance Misskey's inner window
+// @description  Enhance Misskey's inner window (for Deck UI)
 // @author       ilplrr
 // @match        https://misskey.io/
 // @grant        none
