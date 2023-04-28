@@ -49,11 +49,11 @@
                         // inner window's edge and corner
                         const windowTopDblclickHandler = () => {
                             elm.style.top = '0px';
-                            elm.style.height = `${appHeight - 5}px`;
+                            elm.style.height = `${app.offsetHeight - 5}px`;
                         }
 
                         const windowBottomDblclickHandler = () => {
-                            elm.style.height = `${appHeight - elm.offsetTop}px`;
+                            elm.style.height = `${app.offsetHeight - elm.offsetTop}px`;
                         };
 
                         const windowLeftDblclickHandler = () => {
@@ -104,8 +104,8 @@
                         const w = elm.offsetWidth;
                         const bottom = y + h;
                         const right = x + w / 2;
-                        const top = Math.max(0, y - Math.max(0, bottom - appHeight));
-                        const left = Math.max(0, x - w / 2 - Math.max(0, right - appWidth));
+                        const top = Math.max(0, y - Math.max(0, bottom - app.offsetHeight));
+                        const left = Math.max(0, x - w / 2 - Math.max(0, right - app.offsetWidth));
                         elm.style.top = `${top}px`;
                         elm.style.left = `${left}px`;
                     }
