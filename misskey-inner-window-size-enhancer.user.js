@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         misskey-inner-window-size-enhancer
 // @namespace    https://github.com/ilplrr
-// @version      1.0
+// @version      1.1
 // @description  Enhance Misskey's inner window
 // @author       ilplrr
 // @match        https://misskey.io/
@@ -14,15 +14,17 @@
     const INNER_WINDOW_DEFAULT_HEIGHT = '650px';
     const INNER_WINDOW_DEFAULT_WIDTH = '550px';
 
+    const MAX_WIDTH = 900;
+
     function main(lastH=-1, lastW=-1){
-        const targetNode = document.getElementById('misskey_app');
-        if (!targetNode) {
+        const app = document.getElementById('misskey_app');
+        if (!app) {
             setTimeout(main, 100);
             return;
         }
 
-        const appHeight = targetNode.offsetHeight;
-        const appWidth = targetNode.offsetWidth;
+        const appHeight = app.offsetHeight;
+        const appWidth = app.offsetWidth;
         if (lastH !== appHeight || lastW !== appWidth || appHeight <= 0 || appWidth <= 0) {
             setTimeout(main, 100, appHeight, appWidth);
             return;
@@ -44,16 +46,55 @@
                         elm.style.height = INNER_WINDOW_DEFAULT_HEIGHT;
                         elm.style.width = INNER_WINDOW_DEFAULT_WIDTH;
 
-                        // inner window's top border
-                        elm.querySelector('div.x6GRm.xe7xr').addEventListener('dblclick', () => {
+                        // inner window's edge and corner
+                        const windowTopDblclickHandler = () => {
                             elm.style.top = '0px';
                             elm.style.height = `${appHeight - 5}px`;
-                        });
+                        }
 
-                        // inner window's bottom border
-                        elm.querySelector('div.xnqRB.xe7xr').addEventListener('dblclick', () => {
+                        const windowBottomDblclickHandler = () => {
                             elm.style.height = `${appHeight - elm.offsetTop}px`;
-                        });
+                        };
+
+                        const windowLeftDblclickHandler = () => {
+                            const right = elm.offsetLeft + elm.offsetWidth;
+                            const nextLeft = Math.max(0, right - MAX_WIDTH);
+                            elm.style.left = `${nextLeft}px`;
+                            elm.style.width = `${right - nextLeft}px`;
+                        };
+
+                        const windowRightDblclickHandler = () => {
+                            const nextRight = Math.min(app.offsetWidth, elm.offsetLeft + MAX_WIDTH);
+                            elm.style.width = `${nextRight - elm.offsetLeft}px`;
+                        };
+
+                        const top = elm.querySelector('div.x6GRm.xe7xr');
+                        top.addEventListener('dblclick', windowTopDblclickHandler);
+
+                        const bottom = elm.querySelector('div.xnqRB.xe7xr');
+                        bottom.addEventListener('dblclick', windowBottomDblclickHandler);
+
+                        const left = elm.querySelector('div.xuyYZ.xe7xr');
+                        left.addEventListener('dblclick', windowLeftDblclickHandler);
+
+                        const right = elm.querySelector('div.xpwnF.xe7xr');
+                        right.addEventListener('dblclick', windowRightDblclickHandler);
+
+                        const topLeft = elm.querySelector('div.xawgF.xe7xr');
+                        topLeft.addEventListener('dblclick', windowTopDblclickHandler);
+                        topLeft.addEventListener('dblclick', windowLeftDblclickHandler);
+
+                        const topRight = elm.querySelector('div.x6Jrb.xe7xr');
+                        topRight.addEventListener('dblclick', windowTopDblclickHandler);
+                        topRight.addEventListener('dblclick', windowRightDblclickHandler);
+
+                        const bottomLeft = elm.querySelector('div.xij7W.xe7xr');
+                        bottomLeft.addEventListener('dblclick', windowBottomDblclickHandler);
+                        bottomLeft.addEventListener('dblclick', windowLeftDblclickHandler);
+
+                        const bottomRight = elm.querySelector('div.xviz9.xe7xr');
+                        bottomRight.addEventListener('dblclick', windowBottomDblclickHandler);
+                        bottomRight.addEventListener('dblclick', windowRightDblclickHandler);
                     }
                 } else if ('attributes') {
                     const elm = mutation.target;
@@ -73,7 +114,7 @@
         };
 
         const observer = new MutationObserver(callback);
-        observer.observe(targetNode, { attributes: true, childList: true, subtree: true });
+        observer.observe(app, { attributes: true, childList: true, subtree: true });
     }
     main()
 })();
