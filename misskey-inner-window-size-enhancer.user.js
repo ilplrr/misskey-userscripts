@@ -39,7 +39,7 @@
                 if (mutation.type === 'childList') {
                     const elm = mutation.addedNodes[0];
                     if (!elm) continue;
-                    if (elm.tagName === 'DIV' && elm.className === 'xpAOc') {
+                    if (elm.tagName === 'DIV' && [...elm.classList].includes('xpAOc')) {
                         if (elm.querySelector('div.emojis')) continue;
 
                         // resize
