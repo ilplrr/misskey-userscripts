@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         misskey-inner-window-size-enhancer
 // @namespace    https://github.com/ilplrr
-// @version      1.1
+// @version      1.2
 // @description  Enhance Misskey's inner window (for Deck UI)
 // @author       ilplrr
-// @match        https://misskey.io/
+// @match        https://misskey.io/*
 // @grant        none
 // ==/UserScript==
 
@@ -104,8 +104,8 @@
                         const w = elm.offsetWidth;
                         const bottom = y + h;
                         const right = x + w / 2;
-                        const top = Math.max(0, y - Math.max(0, bottom - app.offsetHeight));
-                        const left = Math.max(0, x - w / 2 - Math.max(0, right - app.offsetWidth));
+                        const top = Math.max(0, y - Math.max(0, bottom - app.offsetHeight)) + window.scrollY;
+                        const left = Math.max(0, x - w / 2 - Math.max(0, right - app.offsetWidth)) + window.scrollX;
                         elm.style.top = `${top}px`;
                         elm.style.left = `${left}px`;
                     }
