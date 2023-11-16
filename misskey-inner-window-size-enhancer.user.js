@@ -6,8 +6,6 @@
 // @description  Enhance Misskey's inner window (for Deck UI)
 // @author       ilplrr
 // @match        https://misskey.io/
-// @match        https://mattyaski.co/
-// @match        https://misskey.kyoupro.com/
 // @grant        none
 // ==/UserScript==
 
@@ -49,14 +47,14 @@
         if (mutation.type === 'childList') {
           const elm = mutation.addedNodes[0];
           if (!elm) continue;
-          if (elm.tagName === 'DIV' && [...elm.classList].includes('xpAOc')) {
+          if (elm.tagName === 'DIV' && elm.classList.contains('xpAOc')) {
             if (elm.querySelector('div.emojis')?.className === 'emojis') continue;
 
-            // resize
+            // ウィンドウの縦幅と横幅を変更。
             elm.style.height = INNER_WINDOW_DEFAULT_HEIGHT;
             elm.style.width = INNER_WINDOW_DEFAULT_WIDTH;
 
-            // 少しずつずらす
+            // ウィンドウの初期表示位置を、新しいウィンドウが開かれる度に少しずつずらす。
             const style = window.getComputedStyle(elm);
             const beforeTop = elm.offsetTop;
             const beforeLeft = elm.offsetLeft;
@@ -67,7 +65,7 @@
             offsetX += WINDOW_OFFSET_STEP_X;
             offsetY += WINDOW_OFFSET_STEP_Y;
 
-            // inner window's edge and corner
+            // ウィンドウの端か角をダブルクリックしてサイズを広げられるように。
             const windowTopDblclickHandler = () => {
               elm.style.top = '0px';
               elm.style.height = `${app.offsetHeight - 5}px`;
@@ -120,7 +118,7 @@
         } else if ('attributes') {
           const elm = mutation.target;
           if (typeof(elm.className) === 'string' && elm.className.indexOf('xr8AW') > -1 && elm.querySelector('div.emojis')) {
-            // emoji picker window
+            // 絵文字ピッカーの表示位置をカーソル位置に変更。
             const h = elm.offsetHeight;
             const w = elm.offsetWidth;
             const bottom = y + h;
