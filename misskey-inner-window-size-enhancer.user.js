@@ -42,13 +42,27 @@
 
     let offsetX = WINDOW_INITIAL_OFFSET_X;
     let offsetY = WINDOW_INITIAL_OFFSET_Y;
+    let windowCount = 0;
     const callback = function(mutationsList, observer) {
       for(const mutation of mutationsList) {
         if (mutation.type === 'childList') {
+          const removedWindows = [...mutation.removedNodes].filter((elm) => {
+            return elm.tagName === 'DIV' && elm.classList.contains('xpAOc')
+            && elm.querySelector('div.emojis')?.className !== 'emojis';
+          });
+
+          windowCount -= removedWindows.length;
+          if (windowCount <= 0) {
+            offsetX = WINDOW_INITIAL_OFFSET_X;
+            offsetY = WINDOW_INITIAL_OFFSET_Y;
+          }
+
           const elm = mutation.addedNodes[0];
           if (!elm) continue;
           if (elm.tagName === 'DIV' && elm.classList.contains('xpAOc')) {
             if (elm.querySelector('div.emojis')?.className === 'emojis') continue;
+
+            windowCount += 1;
 
             // ウィンドウの縦幅と横幅を変更。
             elm.style.height = INNER_WINDOW_DEFAULT_HEIGHT;
