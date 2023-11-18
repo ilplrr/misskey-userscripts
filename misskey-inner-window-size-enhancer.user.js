@@ -40,9 +40,8 @@
     let y = 0;
     document.body.addEventListener('mousemove', (e) => { x = e.clientX; y = e.clientY; });
 
-    let offsetX = WINDOW_INITIAL_OFFSET_X;
-    let offsetY = WINDOW_INITIAL_OFFSET_Y;
-    let windowCount = 0;
+    const windowsOffsets = new Map([[null, { x: null, y: null }]]); // Map<Element, {x = offsetX, y = offsetY}>
+
     const callback = function(mutationsList, observer) {
       for(const mutation of mutationsList) {
         if (mutation.type === 'childList') {
@@ -51,33 +50,34 @@
             && elm.querySelector('div.emojis')?.className !== 'emojis';
           });
 
-          windowCount -= removedWindows.length;
-          if (windowCount <= 0) {
-            offsetX = WINDOW_INITIAL_OFFSET_X;
-            offsetY = WINDOW_INITIAL_OFFSET_Y;
-          }
+          removedWindows.forEach((elm) => windowsOffsets.delete(elm));
 
           const elm = mutation.addedNodes[0];
           if (!elm) continue;
           if (elm.tagName === 'DIV' && elm.classList.contains('xpAOc')) {
             if (elm.querySelector('div.emojis')?.className === 'emojis') continue;
 
-            windowCount += 1;
-
             // ウィンドウの縦幅と横幅を変更。
             elm.style.height = INNER_WINDOW_DEFAULT_HEIGHT;
             elm.style.width = INNER_WINDOW_DEFAULT_WIDTH;
 
             // ウィンドウの初期表示位置を、新しいウィンドウが開かれる度に少しずつずらす。
-            const style = window.getComputedStyle(elm);
             const beforeTop = elm.offsetTop;
             const beforeLeft = elm.offsetLeft;
+            const lastOffset = [...windowsOffsets.values()].pop();
+
+            const calcNextOffset = (last, step, initial) => {
+              if (last === null) return initial;
+              return last + step;
+            }
+            let offsetY = calcNextOffset(lastOffset.y, WINDOW_OFFSET_STEP_Y, WINDOW_INITIAL_OFFSET_Y);
+            let offsetX = calcNextOffset(lastOffset.x, WINDOW_OFFSET_STEP_X, WINDOW_INITIAL_OFFSET_X);
             if (beforeTop + offsetY + elm.offsetHeight > window.innerHeight) offsetY = WINDOW_INITIAL_OFFSET_Y;
             if (beforeLeft + offsetX + elm.offsetWidth > window.innerWidth) offsetX = WINDOW_INITIAL_OFFSET_X;
+
             elm.style.top = `${beforeTop + offsetY}px`;
             elm.style.left = `${beforeLeft + offsetX}px`;
-            offsetX += WINDOW_OFFSET_STEP_X;
-            offsetY += WINDOW_OFFSET_STEP_Y;
+            windowsOffsets.set(elm, { y: offsetY, x: offsetX });
 
             // ウィンドウの端か角をダブルクリックしてサイズを広げられるように。
             const windowTopDblclickHandler = () => {
