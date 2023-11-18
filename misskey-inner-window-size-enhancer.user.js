@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         misskey-inner-window-size-enhancer
 // @namespace    https://github.com/ilplrr
-// @version      1.3
+// @version      1.4
 // @updateURL    https://github.com/ilplrr/misskey-userscripts/raw/master/misskey-inner-window-size-enhancer.user.js
 // @description  Enhance Misskey's inner window (for Deck UI)
 // @author       ilplrr
