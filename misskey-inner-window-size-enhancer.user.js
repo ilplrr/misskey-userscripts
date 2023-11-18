@@ -9,7 +9,7 @@
 // @grant        none
 // ==/UserScript==
 
-(function() {
+(function () {
   'use strict';
 
   const INNER_WINDOW_DEFAULT_HEIGHT = '650px';
@@ -22,7 +22,7 @@
   const WINDOW_OFFSET_STEP_Y = 25;
   const WINDOW_OFFSET_STEP_X = 25;
 
-  function main(lastH=-1, lastW=-1){
+  function main(lastH = -1, lastW = -1) {
     const app = document.getElementById('misskey_app');
     if (!app) {
       setTimeout(main, 100);
@@ -38,16 +38,22 @@
 
     let x = 0;
     let y = 0;
-    document.body.addEventListener('mousemove', (e) => { x = e.clientX; y = e.clientY; });
+    document.body.addEventListener('mousemove', (e) => {
+      x = e.clientX;
+      y = e.clientY;
+    });
 
     const windowsOffsets = new Map([[null, { x: null, y: null }]]); // Map<Element, {x = offsetX, y = offsetY}>
 
-    const callback = function(mutationsList, observer) {
-      for(const mutation of mutationsList) {
+    const callback = function (mutationsList, observer) {
+      for (const mutation of mutationsList) {
         if (mutation.type === 'childList') {
           const removedWindows = [...mutation.removedNodes].filter((elm) => {
-            return elm.tagName === 'DIV' && elm.classList.contains('xpAOc')
-            && elm.querySelector('div.emojis')?.className !== 'emojis';
+            return (
+              elm.tagName === 'DIV' &&
+              elm.classList.contains('xpAOc') &&
+              elm.querySelector('div.emojis')?.className !== 'emojis'
+            );
           });
 
           removedWindows.forEach((elm) => windowsOffsets.delete(elm));
@@ -69,7 +75,7 @@
             const calcNextOffset = (last, step, initial) => {
               if (last === null) return initial;
               return last + step;
-            }
+            };
             let offsetY = calcNextOffset(lastOffset.y, WINDOW_OFFSET_STEP_Y, WINDOW_INITIAL_OFFSET_Y);
             let offsetX = calcNextOffset(lastOffset.x, WINDOW_OFFSET_STEP_X, WINDOW_INITIAL_OFFSET_X);
             if (beforeTop + offsetY + elm.offsetHeight > window.innerHeight) offsetY = WINDOW_INITIAL_OFFSET_Y;
@@ -83,7 +89,7 @@
             const windowTopDblclickHandler = () => {
               elm.style.top = '0px';
               elm.style.height = `${app.offsetHeight - 5}px`;
-            }
+            };
 
             const windowBottomDblclickHandler = () => {
               elm.style.height = `${app.offsetHeight - elm.offsetTop}px`;
@@ -131,7 +137,11 @@
           }
         } else if ('attributes') {
           const elm = mutation.target;
-          if (typeof(elm.className) === 'string' && elm.className.indexOf('xr8AW') > -1 && elm.querySelector('div.emojis')) {
+          if (
+            typeof elm.className === 'string' &&
+            elm.className.indexOf('xr8AW') > -1 &&
+            elm.querySelector('div.emojis')
+          ) {
             // 絵文字ピッカーの表示位置をカーソル位置に変更。
             const h = elm.offsetHeight;
             const w = elm.offsetWidth;
@@ -149,5 +159,5 @@
     const observer = new MutationObserver(callback);
     observer.observe(app, { attributes: true, childList: true, subtree: true });
   }
-  main()
+  main();
 })();
