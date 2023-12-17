@@ -109,11 +109,11 @@
 
             const origFlexGrowA = Number(a.style.flexGrow) || Number(window.getComputedStyle(a).flexGrow) || 1;
             const origFlexGrowB = Number(b.style.flexGrow) || Number(window.getComputedStyle(b).flexGrow) || 1;
-            const flexGrowToal = origFlexGrowA + origFlexGrowB;
+            const flexGrowTotal = origFlexGrowA + origFlexGrowB;
             // console.log('flex-grow(orig): a,b,total', origFlexGrowA, origFlexGrowB, flexGrowToal);
 
-            const flexGrowA = weightA * flexGrowToal;
-            const flexGrowB = weightB * flexGrowToal;
+            const flexGrowA = weightA * flexGrowTotal;
+            const flexGrowB = weightB * flexGrowTotal;
             a.style.flexGrow = flexGrowA;
             b.style.flexGrow = flexGrowB;
             // console.log('flex-grow:a,b,sum', flexGrowA, flexGrowB, flexGrowB + flexGrowA);
