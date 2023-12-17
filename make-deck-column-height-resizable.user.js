@@ -73,9 +73,11 @@
 
         sep.onmousedown = (event) => {
           targetSeparator = event.target;
+          column.style.userSelect = 'none';
 
           column.onmousemove = (ev) => {
             if (!ev.buttons) {
+              column.style.userSelect = null;
               column.onmousemove = null;
               targetSeparator = null;
               return;
@@ -120,6 +122,7 @@
           };
         };
         sep.onmouseup = () => {
+          column.style.userSelect = null;
           targetSeparator = null;
           column.onmousemove = null;
         };
