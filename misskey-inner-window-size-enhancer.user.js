@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         misskey-inner-window-size-enhancer
 // @namespace    https://github.com/ilplrr
-// @version      1.4
+// @version      1.5
 // @updateURL    https://github.com/ilplrr/misskey-userscripts/raw/master/misskey-inner-window-size-enhancer.user.js
 // @description  Enhance Misskey's inner window (for Deck UI)
 // @author       ilplrr
@@ -45,7 +45,7 @@
 
     const windowsOffsets = new Map([[null, { x: null, y: null }]]); // Map<Element, {x = offsetX, y = offsetY}>
 
-    const callback = function (mutationsList, observer) {
+    const callback = function (mutationsList) {
       for (const mutation of mutationsList) {
         if (mutation.type === 'childList') {
           const removedWindows = [...mutation.removedNodes].filter((elm) => {
@@ -135,11 +135,11 @@
             bottomRight.addEventListener('dblclick', windowBottomDblclickHandler);
             bottomRight.addEventListener('dblclick', windowRightDblclickHandler);
           }
-        } else if ('attributes') {
+        } else if (mutation.type === 'attributes') {
           const elm = mutation.target;
           if (
-            typeof elm.className === 'string' &&
-            elm.className.indexOf('xr8AW') > -1 &&
+            elm.nodeType === Node.ELEMENT_NODE &&
+            elm.classList.contains('xr8AW') > -1 &&
             elm.querySelector('div.emojis')
           ) {
             // 絵文字ピッカーの表示位置をカーソル位置に変更。
