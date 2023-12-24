@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         misskey-inner-window-size-enhancer
 // @namespace    https://github.com/ilplrr
-// @version      1.6
+// @version      1.7
 // @updateURL    https://github.com/ilplrr/misskey-userscripts/raw/master/misskey-inner-window-size-enhancer.user.js
 // @description  Enhance Misskey's inner window (for Deck UI)
 // @author       ilplrr
@@ -45,7 +45,7 @@
 
   let x = 0;
   let y = 0;
-  document.body.addEventListener('mousemove', (e) => {
+  document.body.addEventListener('mouseup', (e) => {
     x = e.clientX;
     y = e.clientY;
   });
