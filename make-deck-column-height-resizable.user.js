@@ -28,31 +28,6 @@
   };
 
   const separatorClassName = `${GM.info.script.name}--separator`;
-  (() => {
-    const styleClassName = `${GM.info.script.name}--style`;
-    const style = document.querySelector(`.${styleClassName}`) || document.createElement('style');
-    style.textContent = `
-      .xnksy.xa96n {
-        margin-bottom: 0 !important;
-        min-height: var(--deckColumnHeaderHeight)
-      }
-      .xnksy.xa96n:not(.${miClassNames.stackActive}) {
-        flex-grow: 0 !important;
-      }
-      .xnksy.xa96n.${miClassNames.stackActive} {
-        flex: 1 1 0;
-      }
-
-      .${separatorClassName} {
-        cursor: row-resize;
-        height: var(--columnGap);
-        max-height: var(--columnGap);
-        userSelect: none;
-      }
-    `;
-    style.classList.add(styleClassName);
-    document.body.appendChild(style);
-  })();
 
   const makeColumnHeightResizable = (column) => {
     column.querySelectorAll(`.${separatorClassName}`).forEach((e) => e.remove());
@@ -132,12 +107,9 @@
     columnsElm.querySelectorAll(`section.${miClassNames.column}`).forEach((column) => {
       makeColumnHeightResizable(column);
       new MutationObserver((muationsList) => {
-        loop: for (const mutation of muationsList) {
-          for (const node of mutation.addedNodes) {
-            if (node.classList.contains(separatorClassName)) continue;
-            makeColumnHeightResizable(column);
-            break loop;
-          }
+        for (const mutation of muationsList) {
+          const hasColumn = [...mutation.addedNodes].some((node) => !node.classList.contains(separatorClassName));
+          if (hasColumn) makeColumnHeightResizable(column);
         }
       }).observe(column, { childList: true });
     });
@@ -151,6 +123,32 @@
     f();
   });
   const columnsElm = await waitColumnsDisplayed;
+
+  (() => {
+    const styleClassName = `${GM.info.script.name}--style`;
+    const style = document.querySelector(`.${styleClassName}`) || document.createElement('style');
+    style.textContent = `
+      .xnksy.xa96n {
+        margin-bottom: 0 !important;
+        min-height: var(--deckColumnHeaderHeight)
+      }
+      .xnksy.xa96n:not(.${miClassNames.stackActive}) {
+        flex-grow: 0 !important;
+      }
+      .xnksy.xa96n.${miClassNames.stackActive} {
+        flex: 1 1 0;
+      }
+
+      .${separatorClassName} {
+        cursor: row-resize;
+        height: var(--columnGap);
+        max-height: var(--columnGap);
+        userSelect: none;
+      }
+    `;
+    style.classList.add(styleClassName);
+    document.body.appendChild(style);
+  })();
 
   new MutationObserver(makeColumnsHeightResizable).observe(columnsElm, { childList: true });
   makeColumnsHeightResizable();
