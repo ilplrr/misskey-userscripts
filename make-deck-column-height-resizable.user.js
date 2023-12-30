@@ -29,9 +29,9 @@
 
   const separatorClassName = `${GM.info.script.name}--separator`;
 
-  const makeColumnHeightResizable = (column) => {
-    column.querySelectorAll(`.${separatorClassName}`).forEach((e) => e.remove());
-    const stacks = column.children;
+  const makeColumnHeightResizable = (section) => {
+    section.querySelectorAll(`.${separatorClassName}`).forEach((e) => e.remove());
+    const stacks = section.children;
 
     let targetSeparator = null;
 
@@ -40,19 +40,19 @@
       if (stack.classList.contains(separatorClassName)) return;
       if (first) return (first = false);
 
-      const sep = document.createElement('div');
-      sep.classList.add(separatorClassName);
+      const separator = document.createElement('div');
+      separator.classList.add(separatorClassName);
       // sep.style.backgroundColor = `hsl(${new Date().getSeconds() * 6} 100% 80%)`;
-      column.insertBefore(sep, stack);
+      section.insertBefore(separator, stack);
 
-      sep.onmousedown = (event) => {
+      separator.onmousedown = (event) => {
         targetSeparator = event.target;
-        column.style.userSelect = 'none';
+        section.style.userSelect = 'none';
 
-        column.onmousemove = (ev) => {
+        section.onmousemove = (ev) => {
           if (!ev.buttons) {
-            column.style.userSelect = null;
-            column.onmousemove = null;
+            section.style.userSelect = null;
+            section.onmousemove = null;
             targetSeparator = null;
             return;
           }
@@ -95,10 +95,10 @@
           // console.log('flex-grow:a,b,sum', flexGrowA, flexGrowB, flexGrowB + flexGrowA);
         };
       };
-      sep.onmouseup = () => {
-        column.style.userSelect = null;
+      separator.onmouseup = () => {
+        section.style.userSelect = null;
         targetSeparator = null;
-        column.onmousemove = null;
+        section.onmousemove = null;
       };
     });
   };
