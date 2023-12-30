@@ -22,28 +22,37 @@
   const app = await waitAppDisplayed;
 
   const miClassNames = {
-    columnsElm: 'xrNPB',
-    column: 'xAOWy',
-    stackActive: 'xeiRC',
+    sections: 'xrNPB',
+    section: 'xAOWy',
+    column: 'xnksy',
+    columnActive: 'xeiRC',
   };
 
   const separatorClassName = `${GM.info.script.name}--separator`;
 
   const makeColumnHeightResizable = (section) => {
     section.querySelectorAll(`.${separatorClassName}`).forEach((e) => e.remove());
-    const stacks = section.children;
+    const columns = section.children;
 
     let targetSeparator = null;
 
     let first = true;
-    [...stacks].forEach((stack) => {
-      if (stack.classList.contains(separatorClassName)) return;
+    [...columns].forEach((column) => {
+      if (column.classList.contains(separatorClassName)) return;
+      new MutationObserver(() => {
+        const activeColumns = section.querySelectorAll(`.${miClassNames.columnActive}`);
+        const onlyOne = activeColumns.length === 1;
+        for (const column of section.querySelectorAll(`.${miClassNames.column}`)) {
+          column.style.flexBasis = onlyOne && column.classList.contains(miClassNames.columnActive) ? 'auto' : null;
+        }
+      }).observe(column, { attributes: true });
+
       if (first) return (first = false);
 
       const separator = document.createElement('div');
       separator.classList.add(separatorClassName);
       // sep.style.backgroundColor = `hsl(${new Date().getSeconds() * 6} 100% 80%)`;
-      section.insertBefore(separator, stack);
+      section.insertBefore(separator, column);
 
       separator.onmousedown = (event) => {
         targetSeparator = event.target;
@@ -60,7 +69,7 @@
 
           const findActiveStack = (propName) => {
             let elm = targetSeparator[propName];
-            while (elm && !elm.classList.contains(miClassNames.stackActive)) {
+            while (elm && !elm.classList.contains(miClassNames.columnActive)) {
               elm = elm[propName];
             }
             return elm;
@@ -90,9 +99,8 @@
 
           const flexGrowA = weightA * flexGrowTotal;
           const flexGrowB = weightB * flexGrowTotal;
-          const denom = Math.min(1, Math.min(flexGrowA, flexGrowB));
-          a.style.flexGrow = flexGrowA / denom;
-          b.style.flexGrow = flexGrowB / denom;
+          a.style.flexGrow = flexGrowA;
+          b.style.flexGrow = flexGrowB;
           // console.log('flex-grow:a,b,sum', flexGrowA, flexGrowB, flexGrowB + flexGrowA);
         };
       };
@@ -105,20 +113,22 @@
   };
 
   const makeColumnsHeightResizable = () => {
-    columnsElm.querySelectorAll(`section.${miClassNames.column}`).forEach((column) => {
-      makeColumnHeightResizable(column);
+    columnsElm.querySelectorAll(`section.${miClassNames.section}`).forEach((section) => {
+      makeColumnHeightResizable(section);
       new MutationObserver((muationsList) => {
         for (const mutation of muationsList) {
-          const hasColumn = [...mutation.addedNodes].some((node) => !node.classList.contains(separatorClassName));
-          if (hasColumn) makeColumnHeightResizable(column);
+          const columnAddedOrRemoved = [...mutation.addedNodes, ...mutation.removedNodes].some((node) =>
+            node.classList.contains(miClassNames.section),
+          );
+          if (columnAddedOrRemoved) makeColumnHeightResizable(section);
         }
-      }).observe(column, { childList: true });
+      }).observe(section, { childList: true, attributes: true });
     });
   };
 
   const waitColumnsDisplayed = new Promise((resolve) => {
     const f = () => {
-      const columnsElm = app.querySelector(`div.${miClassNames.columnsElm}`);
+      const columnsElm = app.querySelector(`div.${miClassNames.sections}`);
       columnsElm ? resolve(columnsElm) : setTimeout(f, 100);
     };
     f();
@@ -129,14 +139,14 @@
     const styleClassName = `${GM.info.script.name}--style`;
     const style = document.querySelector(`.${styleClassName}`) || document.createElement('style');
     style.textContent = `
-      .xnksy.xa96n {
+      .${miClassNames.column} {
         margin-bottom: 0 !important;
         min-height: var(--deckColumnHeaderHeight)
       }
-      .xnksy.xa96n:not(.${miClassNames.stackActive}) {
+      .${miClassNames.column}:not(.${miClassNames.columnActive}) {
         flex-grow: 0 !important;
       }
-      .xnksy.xa96n.${miClassNames.stackActive} {
+      .${miClassNames.column}.${miClassNames.columnActive} {
         flex: 1 1 0;
       }
 
