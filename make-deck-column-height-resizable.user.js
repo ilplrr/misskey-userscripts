@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         make-deck-column-height-resizable
 // @namespace    http://tampermonkey.net/
-// @version      0.1.1
+// @version      0.1.2
 // @description  try to take over the world!
 // @author       You
 // @match        https://misskey.io/
@@ -90,8 +90,9 @@
 
           const flexGrowA = weightA * flexGrowTotal;
           const flexGrowB = weightB * flexGrowTotal;
-          a.style.flexGrow = flexGrowA;
-          b.style.flexGrow = flexGrowB;
+          const denom = Math.min(1, Math.min(flexGrowA, flexGrowB));
+          a.style.flexGrow = flexGrowA / denom;
+          b.style.flexGrow = flexGrowB / denom;
           // console.log('flex-grow:a,b,sum', flexGrowA, flexGrowB, flexGrowB + flexGrowA);
         };
       };
