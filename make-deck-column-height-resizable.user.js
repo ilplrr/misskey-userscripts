@@ -30,6 +30,17 @@
 
   const separatorClassName = `${GM.info.script.name}--separator`;
 
+  const columnObserver = new MutationObserver((mutationsList) => {
+    for (const mutation of mutationsList) {
+      const section = mutation.target.parentElement;
+      const activeColumns = section.querySelectorAll(`.${miClassNames.columnActive}`);
+      const onlyOne = activeColumns.length === 1;
+      for (const column of section.querySelectorAll(`.${miClassNames.column}`)) {
+        column.style.flexBasis = onlyOne && column.classList.contains(miClassNames.columnActive) ? 'auto' : null;
+      }
+    }
+  });
+
   const makeColumnHeightResizable = (section) => {
     section.querySelectorAll(`.${separatorClassName}`).forEach((e) => e.remove());
     const columns = section.children;
@@ -39,13 +50,8 @@
     let first = true;
     [...columns].forEach((column) => {
       if (column.classList.contains(separatorClassName)) return;
-      new MutationObserver(() => {
-        const activeColumns = section.querySelectorAll(`.${miClassNames.columnActive}`);
-        const onlyOne = activeColumns.length === 1;
-        for (const column of section.querySelectorAll(`.${miClassNames.column}`)) {
-          column.style.flexBasis = onlyOne && column.classList.contains(miClassNames.columnActive) ? 'auto' : null;
-        }
-      }).observe(column, { attributes: true });
+
+      columnObserver.observe(column, { attributes: true });
 
       if (first) return (first = false);
 
@@ -118,7 +124,7 @@
       new MutationObserver((muationsList) => {
         for (const mutation of muationsList) {
           const columnAddedOrRemoved = [...mutation.addedNodes, ...mutation.removedNodes].some((node) =>
-            node.classList.contains(miClassNames.section),
+            node.classList.contains(miClassNames.column),
           );
           if (columnAddedOrRemoved) makeColumnHeightResizable(section);
         }
