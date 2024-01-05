@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         misskey-inner-window-size-enhancer
 // @namespace    https://github.com/ilplrr
-// @version      1.7
+// @version      1.8
 // @updateURL    https://github.com/ilplrr/misskey-userscripts/raw/master/misskey-inner-window-size-enhancer.user.js
 // @description  Enhance Misskey's inner window (for Deck UI)
 // @author       ilplrr
@@ -42,13 +42,6 @@
     f();
   });
   const app = await waitAppDisplayed;
-
-  let x = 0;
-  let y = 0;
-  document.body.addEventListener('mouseup', (e) => {
-    x = e.clientX;
-    y = e.clientY;
-  });
 
   const windowsOffsets = new Map([[null, { x: null, y: null }]]); // Map<Element, {x = offsetX, y = offsetY}>
 
@@ -148,6 +141,11 @@
     }
   };
 
+  let x = 0;
+  let y = 0;
+  document.body.addEventListener('mouseup', (e) => ([x, y] = [e.clientX, e.clientY]));
+  document.body.addEventListener('mousedown', (e) => ([x, y] = [e.clientX, e.clientY]));
+
   let pickerStyleObserver = null;
   const clearPickerStyleObserver = () => {
     if (pickerStyleObserver) {
@@ -160,7 +158,7 @@
     MkModal_content: 'xr8AW',
   });
   const callbackForReactionPicker = function (mutationsList) {
-    mutationsList.forEach((mutation) => {
+    mutationsList.forEach(async (mutation) => {
       const elm = mutation.target.querySelector(`.${miClassNames.MkModal_content}`);
       if (!elm) return;
 
@@ -171,28 +169,27 @@
       }
       if (pickerIsVisible) return;
 
+      pickerIsVisible = true;
+
       clearPickerStyleObserver();
       elm.style.top = null;
       elm.style.left = null;
 
-      pickerIsVisible = true;
-      console.log(elm);
-
       // リアクションピッカーの表示位置をカーソル位置に変更。
-      const h = elm.offsetHeight;
-      const w = elm.offsetWidth;
-      const bottom = y + h;
-      const right = x + w / 2;
-      const top = Math.max(0, y - Math.max(0, bottom - app.offsetHeight)) + window.scrollY;
-      const left = Math.max(0, x - w / 2 - Math.max(0, right - app.offsetWidth)) + window.scrollX;
-      const setStyle = () => {
+      const setPosition = () => {
+        const h = elm.offsetHeight;
+        const w = elm.offsetWidth;
+        const bottom = y + h;
+        const right = x + w / 2;
+        const top = Math.max(0, y - Math.max(0, bottom - app.offsetHeight)) + window.scrollY;
+        const left = Math.max(0, x - w / 2 - Math.max(0, right - app.offsetWidth)) + window.scrollX;
         elm.style.top = `${top}px`;
         elm.style.left = `${left}px`;
       };
-      setStyle();
+      setPosition();
 
       // 設定した後に Misskey から上書きされてしまうため、変更を検知したら再設定。
-      pickerStyleObserver = new MutationObserver(setStyle);
+      pickerStyleObserver = new MutationObserver(setPosition);
       pickerStyleObserver.observe(elm, { attributes: true, attributeFilter: ['style'] });
     });
   };
