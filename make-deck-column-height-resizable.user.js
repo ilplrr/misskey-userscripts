@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         make-deck-column-height-resizable
 // @namespace    http://tampermonkey.net/
-// @version      0.1.2
+// @version      0.1.3
 // @description  try to take over the world!
 // @author       You
 // @match        https://misskey.io/
@@ -34,9 +34,12 @@
     for (const mutation of mutationsList) {
       const section = mutation.target.parentElement;
       const activeColumns = section.querySelectorAll(`.${miClassNames.columnActive}`);
-      const onlyOne = activeColumns.length === 1;
-      for (const column of section.querySelectorAll(`.${miClassNames.column}`)) {
-        column.style.flexBasis = onlyOne && column.classList.contains(miClassNames.columnActive) ? 'auto' : null;
+      const flexGrowSum = [...activeColumns].reduce((res, e) => res + (Number(e.style.flexGrow) || 1), 0);
+      if (flexGrowSum > 0 && flexGrowSum < 1) {
+        // active な column の flex-grow の総和が 1 未満にならないようにする。1 未満になると grow してくれないため。
+        for (const column of section.querySelectorAll(`.${miClassNames.column}`)) {
+          column.style.flexGrow = (Number(column.style.flexGrow) || 1) / flexGrowSum;
+        }
       }
     }
   });
@@ -51,7 +54,7 @@
     [...columns].forEach((column) => {
       if (column.classList.contains(separatorClassName)) return;
 
-      columnObserver.observe(column, { attributes: true });
+      columnObserver.observe(column, { attributes: true, attributeFilter: ['class'] });
 
       if (first) return (first = false);
 
@@ -108,6 +111,15 @@
           a.style.flexGrow = flexGrowA;
           b.style.flexGrow = flexGrowB;
           // console.log('flex-grow:a,b,sum', flexGrowA, flexGrowB, flexGrowB + flexGrowA);
+
+          const max = 100000;
+          const columns = [...section.children].filter((e) => e.classList.contains(miClassNames.column));
+          const flexGrowSum = columns.reduce((res, e) => res + (Number(e.style.flexGrow) || 1), 0);
+          if (flexGrowSum > max) {
+            for (const column of columns) {
+              column.style.flexGrow = ((Number(column.style.flexGrow) || 1) * max) / flexGrowSum;
+            }
+          }
         };
       };
       separator.onmouseup = () => {
